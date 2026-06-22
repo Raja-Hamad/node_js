@@ -376,3 +376,51 @@ exports.addToCart = async (req, res) => {
 };
 
 
+// controller method to get the cart items of current user
+
+exports.getCart = async (req, res) => {
+
+    try {
+
+        const cart = await Cart.findOne({
+            user: req.user.userId
+        }).populate("items.product");
+
+        if (!cart) {
+            return res.json({
+                message: "Cart is empty",
+                items: []
+            });
+        }
+
+        let totalPrice = 0;
+
+        const formattedItems = cart.items.map(item => {
+
+            const subtotal =
+                item.product.price * item.quantity;
+
+            totalPrice += subtotal;
+
+            return {
+                product: item.product,
+                quantity: item.quantity,
+                subtotal
+            };
+        });
+
+        res.json({
+            items: formattedItems,
+            totalPrice
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
+
+

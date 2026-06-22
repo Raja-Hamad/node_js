@@ -45,5 +45,10 @@ router.post(
     authMiddleware,
     productController.addToCart
 );
+router.get(
+    "/cart/get",
+    authMiddleware,
+    productController.getCart
+);
 
 module.exports = router;
