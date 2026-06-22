@@ -423,4 +423,36 @@ exports.getCart = async (req, res) => {
     }
 };
 
+// Controller method for deleting the specific product from cart
+
+exports.removeItem = async (req, res) => {
+
+    const cart = await Cart.findOne({
+        user: req.user.userId
+    });
+
+    if (!cart) {
+        return res.status(404).json({
+            message: "Cart not found"
+        });
+    }
+
+    cart.items = cart.items.filter(item =>
+
+        item.product.toString() !== req.params.productId
+
+    );
+
+    await cart.save();
+
+    res.json({
+
+        message: "Item removed successfully",
+
+        cart
+
+    });
+
+};
+
 

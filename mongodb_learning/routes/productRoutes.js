@@ -50,5 +50,10 @@ router.get(
     authMiddleware,
     productController.getCart
 );
+router.delete(
+    "/cart/item/:productId",
+    authMiddleware,
+    productController.removeItem
+);
 
 module.exports = router;
