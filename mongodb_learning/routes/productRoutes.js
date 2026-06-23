@@ -56,4 +56,12 @@ router.delete(
     productController.removeItem
 );
 
+// route for place order of cart Items POST API
+
+router.post(
+    "/order/place",
+    authMiddleware,
+    productController.placeOrder
+);
+
 module.exports = router;

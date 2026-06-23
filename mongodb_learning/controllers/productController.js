@@ -3,6 +3,8 @@
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 const Cart = require("../models/Cart");
+const Order = require("../models/Order");
+
 
 exports.createProduct = async (req, res) => {
 
@@ -452,6 +454,65 @@ exports.removeItem = async (req, res) => {
         cart
 
     });
+
+};
+
+
+// Controller method to place the order of cart items
+
+
+exports.placeOrder = async (req, res) => {
+
+    try {
+
+        const userId = req.user.userId;
+
+        const cart = await Cart.findOne({ user: userId })
+            .populate("items.product");
+
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({
+                message: "Cart is empty"
+            });
+        }
+
+        let totalAmount = 0;
+
+        const orderItems = cart.items.map(item => {
+
+            const subtotal = item.product.price * item.quantity;
+
+            totalAmount += subtotal;
+
+            return {
+                product: item.product._id,
+                quantity: item.quantity,
+                price: item.product.price
+            };
+        });
+
+        const order = await Order.create({
+            user: userId,
+            items: orderItems,
+            totalAmount
+        });
+
+        // 🧹 Clear cart after order
+        cart.items = [];
+        await cart.save();
+
+        res.json({
+            message: "Order placed successfully",
+            order
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
 
 };
 
