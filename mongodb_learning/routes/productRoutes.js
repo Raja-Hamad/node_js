@@ -2,13 +2,17 @@ const express = require("express");
 const router = express.Router();
 
 const productController = require("../controllers/productController");
+const cartController = require("../controllers/cartController");
+
+const orderController = require("../controllers/orderController");
+
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
 const upload = require("../middlewares/upload");
 
 // Public
-router.get("/", authMiddleware,productController.myProducts);
+router.get("/", authMiddleware, productController.myProducts);
 
 // Protected (any logged-in user)
 router.post(
@@ -43,17 +47,17 @@ router.delete(
 router.post(
     "/cart/add",
     authMiddleware,
-    productController.addToCart
+    cartController.addToCart
 );
 router.get(
     "/cart/get",
     authMiddleware,
-    productController.getCart
+    cartController.getCart
 );
 router.delete(
     "/cart/item/:productId",
     authMiddleware,
-    productController.removeItem
+    cartController.removeItem
 );
 
 // route for place order of cart Items POST API
@@ -61,7 +65,33 @@ router.delete(
 router.post(
     "/order/place",
     authMiddleware,
-    productController.placeOrder
+    orderController.placeOrder
 );
 
+// route for get current user orders GET API
+router.get(
+    "/order/my-orders",
+    authMiddleware,
+    orderController.getMyOrders
+);
 module.exports = router;
+
+
+// restricted route of get all the orders of all users by admin
+
+
+router.get(
+    "/all",
+    authMiddleware,
+    adminMiddleware,
+    orderController.getAllOrders
+);
+
+
+router.put(
+    "/:id/status",
+    authMiddleware,
+    adminMiddleware,
+    orderController.updateOrderStatus
+);
+
