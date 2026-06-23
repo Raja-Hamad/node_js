@@ -9,7 +9,7 @@ exports.createProduct = async (req, res) => {
 
     try {
 
-        const { name, price } = req.body;
+        const { name, price ,stock} = req.body;
 
         let images = [];
 
@@ -26,6 +26,7 @@ exports.createProduct = async (req, res) => {
 
             name,
             price,
+            stock,
             images,
             createdBy: req.user.userId
 

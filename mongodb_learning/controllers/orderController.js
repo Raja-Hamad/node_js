@@ -3,7 +3,7 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const User = require("../models/User");
-
+const Product = require("../models/Product");
 
 exports.placeOrder = async (req, res) => {
 
@@ -22,18 +22,31 @@ exports.placeOrder = async (req, res) => {
 
         let totalAmount = 0;
 
-        const orderItems = cart.items.map(item => {
+        // 🔥 STOCK CHECK + DEDUCTION
+        for (let item of cart.items) {
 
-            const subtotal = item.product.price * item.quantity;
+            const product = item.product;
 
-            totalAmount += subtotal;
+            // check stock
+            if (product.stock < item.quantity) {
+                return res.status(400).json({
+                    message: `Not enough stock for ${product.name}`
+                });
+            }
 
-            return {
-                product: item.product._id,
-                quantity: item.quantity,
-                price: item.product.price
-            };
-        });
+            // reduce stock
+            product.stock -= item.quantity;
+            await product.save();
+
+            totalAmount += product.price * item.quantity;
+        }
+
+        // create order items
+        const orderItems = cart.items.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity,
+            price: item.product.price
+        }));
 
         const order = await Order.create({
             user: userId,
@@ -41,7 +54,7 @@ exports.placeOrder = async (req, res) => {
             totalAmount
         });
 
-        // 🧹 Clear cart after order
+        // clear cart
         cart.items = [];
         await cart.save();
 
@@ -57,8 +70,6 @@ exports.placeOrder = async (req, res) => {
         });
 
     }
-
-
 
 };
 
