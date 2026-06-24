@@ -6,6 +6,7 @@ const cartController = require("../controllers/cartController");
 
 const orderController = require("../controllers/orderController");
 
+const analyticsController = require("../controllers/analyticsController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
@@ -81,7 +82,7 @@ module.exports = router;
 
 
 router.get(
-    "/all",
+    "/order/all",
     authMiddleware,
     adminMiddleware,
     orderController.getAllOrders
@@ -89,9 +90,30 @@ router.get(
 
 
 router.put(
-    "/:id/status",
+    "/order/:id/status",
     authMiddleware,
     adminMiddleware,
     orderController.updateOrderStatus
 );
 
+// route to cancel the order by admin or by the user who creeated that order
+
+router.put(
+    "/order/:id/cancel",
+    authMiddleware,
+    orderController.cancelOrder
+);
+
+// route for GET API for dashboard analytics for admin only dashboard
+
+router.get(
+
+    "/admin/analytics",
+
+    authMiddleware,
+
+    adminMiddleware,
+
+    analyticsController.getAnalytics
+
+);
