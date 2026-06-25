@@ -128,6 +128,20 @@ router.get(
     analyticsController.getTopProducts
 
 );
+
+// route or getting the revenues of the orders by months by Admin
+
+router.get(
+
+    "/admin/monthly-revenue",
+
+    authMiddleware,
+
+    adminMiddleware,
+
+    analyticsController.getMonthlyRevenue
+
+);
 module.exports = router;
 
 

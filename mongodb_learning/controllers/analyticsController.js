@@ -79,13 +79,13 @@ exports.getTopProducts = async (req, res) => {
 
         const topProducts = await Order.aggregate([
 
-            {
-                $match: {
-                    status: {
-                        $ne: "cancelled"
-                    }
-                }
-            },
+            // {
+            //     $match: {
+            //         status: {
+            //             $ne: "cancelled"
+            //         }
+            //     }
+            // },
 
             // 1️⃣ items array ko separate documents mein convert karo
             {
@@ -141,6 +141,92 @@ exports.getTopProducts = async (req, res) => {
             totalProducts: topProducts.length,
 
             products: topProducts
+
+        });
+
+    }
+
+    catch (error) {
+
+        res.status(500).json({
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+// controller method for fetching the monthly revenue of orders 
+
+exports.getMonthlyRevenue = async (req, res) => {
+
+    try {
+
+        const monthlyRevenue = await Order.aggregate([
+
+            // Step 1: Cancelled orders ko ignore karo
+         
+
+            // Step 2: Month wise group karo aur revenue add karo
+            {
+                $group: {
+
+                    _id: {
+
+                        $dateToString: {
+
+                            format: "%Y-%m",
+
+                            date: "$createdAt"
+
+                        }
+
+                    },
+
+                    revenue: {
+
+                        $sum: "$totalAmount"
+
+                    }
+
+                }
+
+            },
+
+            // Step 3: Oldest month se latest month tak sort karo
+            {
+                $sort: {
+
+                    _id: 1
+
+                }
+
+            },
+
+            // Step 4: Response ko clean bana do
+            {
+                $project: {
+
+                    _id: 0,
+
+                    month: "$_id",
+
+                    revenue: 1
+
+                }
+
+            }
+
+        ]);
+
+
+        res.json({
+
+            totalMonths: monthlyRevenue.length,
+
+            revenue: monthlyRevenue
 
         });
 
