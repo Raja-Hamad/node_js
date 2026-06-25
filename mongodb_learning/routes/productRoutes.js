@@ -7,6 +7,8 @@ const cartController = require("../controllers/cartController");
 const orderController = require("../controllers/orderController");
 
 const analyticsController = require("../controllers/analyticsController");
+const reviewsController = require("../controllers/reviewsController");
+
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
@@ -140,6 +142,17 @@ router.get(
     adminMiddleware,
 
     analyticsController.getMonthlyRevenue
+
+);
+
+// route to add the reviews to the product
+router.post(
+
+    "/:id/review",
+
+    authMiddleware,
+
+    reviewsController.addReview
 
 );
 module.exports = router;
