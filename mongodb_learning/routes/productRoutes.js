@@ -75,8 +75,6 @@ router.get(
     authMiddleware,
     orderController.getMyOrders
 );
-module.exports = router;
-
 
 // restricted route of get all the orders of all users by admin
 
@@ -117,3 +115,20 @@ router.get(
     analyticsController.getAnalytics
 
 );
+
+// route for getting top-selling products by Admin
+router.get(
+
+    "/admin/top-products",
+
+    authMiddleware,
+
+    adminMiddleware,
+
+    analyticsController.getTopProducts
+
+);
+module.exports = router;
+
+
+
