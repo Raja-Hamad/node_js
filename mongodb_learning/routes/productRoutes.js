@@ -155,6 +155,27 @@ router.post(
     reviewsController.addReview
 
 );
+
+// route of the API to get the reviews of the product by its ID
+
+router.get(
+
+    "/:id/reviews",
+
+    reviewsController.getProductReviews
+
+);
+
+// route API to delete the own's review
+router.delete(
+
+    "/:id/review",
+
+    authMiddleware,
+
+    reviewsController.deleteMyReview
+
+);
 module.exports = router;
 
 
